@@ -18,5 +18,8 @@ There's multiple things that makes DAws better than every Web Shell out there:
 1. Open Source
 1. and much more (check the source for more information; everything is well commented)
 
+###Updates:
+DAws is always updated so keep an on the project if you're interested.
+
 ###Credits:
 1. [dotcppfile](https://twitter.com/dotcppfile)
