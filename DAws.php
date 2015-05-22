@@ -1987,13 +1987,16 @@ function show_div(div_name) //used by the 'rename' form in the file manager to s
 	if ($_SESSION["windows"] == False) //no posix in Windows
 	{
 		//I had to store the result because else it was causing a syntax error on a Windows machine
-		$process_owner = posix_getpwuid(posix_geteuid());
+		if (function_exists('posix_getpwuid'))
+		{
+			$process_owner = posix_getpwuid(posix_geteuid());
 
-		echo "
-		<tr>
-			<td>Process Owner</td>
-			<td>".$process_owner["name"]."</td>
-		</tr>";
+			echo "
+			<tr>
+				<td>Process Owner</td>
+				<td>".$process_owner["name"]."</td>
+			</tr>";
+		}
 	}
 
 	echo "
